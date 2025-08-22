@@ -1,0 +1,23 @@
+CREATE OR REPLACE TABLE `bigquery-sandbox-467304.user_behavior.prep_cards` AS
+SELECT
+  id,
+  client_id,
+  card_brand,
+  card_type,
+  SAFE_CAST(card_number AS STRING) AS card_number,
+  PARSE_DATE('%m/%Y', expires) AS expires,
+  cvv,
+  has_chip,
+  num_cards_issued,
+  credit_limit,
+
+  CASE
+    WHEN REGEXP_CONTAINS(acct_open_date, r'/') THEN
+      PARSE_DATE('%m/%Y', acct_open_date)   -- format 04/2024
+    ELSE
+      PARSE_DATE('%b-%y', acct_open_date)   -- format Sep-02
+  END AS acct_open_date,
+
+  year_pin_last_changed,
+  card_on_dark_web
+FROM `bigquery-sandbox-467304.user_behavior.cards_data`;
