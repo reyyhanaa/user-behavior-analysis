@@ -1,0 +1,23 @@
+CREATE OR REPLACE TABLE `bigquery-sandbox-467304.user_behavior.transactions_analysis` AS
+SELECT
+  t.id AS transaction_id,
+  t.date,
+  t.client_id,
+  u.gender,
+  u.current_age,
+  u.yearly_income,
+  u.credit_score,
+  u.total_debt,
+  c.card_brand,
+  c.card_type,
+  c.credit_limit,
+  SAFE_CAST(t.amount AS NUMERIC) AS amount,
+  t.use_chip,
+  t.merchant_city,
+  t.merchant_state,
+  t.mcc
+FROM `bigquery-sandbox-467304.user_behavior.prep_transactions` t
+LEFT JOIN `bigquery-sandbox-467304.user_behavior.users_data` u
+  ON CAST(t.client_id AS INT64) = u.id
+LEFT JOIN `bigquery-sandbox-467304.user_behavior.prep_cards` c
+  ON CAST(t.card_id AS INT64) = c.id;
